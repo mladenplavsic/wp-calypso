@@ -6,7 +6,6 @@ import classnames from 'classnames';
 import { connect } from 'react-redux';
 import { find, findIndex, isEqual } from 'lodash';
 import { translate, moment } from 'i18n-calypso';
-
 /**
  * Internal dependencies
  */
@@ -23,7 +22,7 @@ import StatsModulePlaceholder from 'my-sites/stats/stats-module/placeholder';
 import ErrorPanel from 'my-sites/stats/stats-error';
 import Sparkline from '../../../components/sparkline';
 import Delta from '../../../components/delta';
-import { parseUnitPeriods } from 'state/stats/lists/utils';
+import formatCurrency from 'lib/format-currency';
 
 class StoreStatsWidgetList extends Component {
 
@@ -67,27 +66,24 @@ class StoreStatsWidgetList extends Component {
 		return this.getDeltasBySelectedPeriod()[ stat ];
 	};
 
-	getDeltaSincePeriod = () => {
-		const delta = this.getDeltasBySelectedPeriod();
-		return parseUnitPeriods( Object.keys( delta )[ 0 ].reference_period );
-	}
-
 	getSelectedIndex = ( data ) => {
 		return findIndex( data, d => d.period === this.props.selectedDate );
 	};
 
 	render() {
-		const { selectedDate, siteId, statType, query, data, emptyMessage, widgets } = this.props;
+		const { siteId, statType, query, data, emptyMessage, widgets } = this.props;
 		const selectedIndex = this.getSelectedIndex( data.data );
 		const { loaded } = this.state;
-		const isLoading = ! loaded && ! ( data && data.length );
-		const hasEmptyData = loaded && data && data.length === 0;
+		const isLoading = ! loaded && ! ( data && data.data.length );
+		const hasEmptyData = loaded && data && data.data.length === 0;
 		let values = [];
 		let titles = null;
 		let widgetData = null;
 		let widgetList = null;
 
 		if ( ! isLoading && ! hasEmptyData ) {
+			const firstRealKey = Object.keys( data.deltas[ selectedIndex ] ).filter( key => key !== 'period' )[ 0 ];
+			const sincePeriod = this.getDeltaByStat( firstRealKey );
 			values = [
 				{
 					key: 'title',
@@ -103,7 +99,7 @@ class StoreStatsWidgetList extends Component {
 				},
 				{
 					key: 'delta',
-					label: `${ translate( 'Since' ) } ${ this.getDeltaSincePeriod().format( 'MMM D' ) }`
+					label: `${ translate( 'Since' ) } ${ moment( sincePeriod.reference_period ).format( 'MMM D' ) }`
 				}
 			];
 
@@ -112,6 +108,7 @@ class StoreStatsWidgetList extends Component {
 					{ values.map( ( value, i ) => {
 						return (
 							<TableItem
+								className={ classnames( 'store-stats-widget-list__table-item', value.key ) }
 								isHeader
 								key={ i }
 								isTitle={ 0 === i }
@@ -128,7 +125,9 @@ class StoreStatsWidgetList extends Component {
 				const delta = this.getDeltaByStat( widget.key );
 				return {
 					title: widget.title,
-					value: timeSeries[ selectedIndex ],
+					value: ( widget.type === 'currency' )
+						? formatCurrency( timeSeries[ selectedIndex ] )
+						:	Math.round( timeSeries[ selectedIndex ] * 100 ) / 100,
 					sparkline: <Sparkline
 						aspectRatio={ 3 }
 						data={ timeSeries }
@@ -141,7 +140,6 @@ class StoreStatsWidgetList extends Component {
 					/>
 				};
 			} );
-
 			widgetList = (
 				<Table header={ titles }>
 					{ widgetData.map( ( row, i ) => (

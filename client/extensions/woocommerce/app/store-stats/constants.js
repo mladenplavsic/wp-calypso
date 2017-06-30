@@ -6,30 +6,36 @@ import { translate } from 'i18n-calypso';
 export const sparkWidgetList1 = [
 	{
 		key: 'products',
-		title: translate( 'Products Purchased' )
+		title: translate( 'Products Purchased' ),
+		type: 'number'
 	},
 	{
 		key: 'avg_products_per_order',
-		title: translate( 'Products Per Order' )
+		title: translate( 'Products Per Order' ),
+		type: 'number'
 	},
 	{
 		key: 'coupons',
-		title: translate( 'Coupons Used' )
+		title: translate( 'Coupons Used' ),
+		type: 'number'
 	}
 ];
 
 export const sparkWidgetList2 = [
 	{
 		key: 'total_refund',
-		title: translate( 'Refunds' )
+		title: translate( 'Refunds' ),
+		type: 'currency'
 	},
 	{
 		key: 'total_shipping',
-		title: translate( 'Shipping' )
+		title: translate( 'Shipping' ),
+		type: 'currency'
 	},
 	{
 		key: 'total_tax',
-		title: translate( 'Tax' )
+		title: translate( 'Tax' ),
+		type: 'currency'
 	}
 ];
 

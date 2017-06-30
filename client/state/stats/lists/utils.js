@@ -119,15 +119,15 @@ function parseOrderDeltas( payload ) {
 	const periods = payload.deltas[ Object.keys( payload.deltas )[ 0 ] ].map( row => row[ periodFieldIndex ] );
 
 	return periods.map( period => {
-			const newRow = { period: parseUnitPeriods( payload.unit, period ).format( 'YYYY-MM-DD' ) };
-			forEach( payload.deltas, ( values, key ) => {
-				const newValues = values.filter( value => value[ periodFieldIndex ] === period )[ 0 ];
-				newRow[ key ] = {};
-				payload.delta_fields.forEach( ( field, i ) => {
-						newRow[ key ][ field ] = newValues[ i ];
-				} );
-			} )
-			return newRow;
+		const newRow = { period: parseUnitPeriods( payload.unit, period ).format( 'YYYY-MM-DD' ) };
+		forEach( payload.deltas, ( values, key ) => {
+			const newValues = values.filter( value => value[ periodFieldIndex ] === period )[ 0 ];
+			newRow[ key ] = {};
+			payload.delta_fields.forEach( ( field, i ) => {
+				newRow[ key ][ field ] = newValues[ i ];
+			} );
+		} );
+		return newRow;
 	} );
 }
 

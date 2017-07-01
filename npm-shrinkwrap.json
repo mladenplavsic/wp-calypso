@@ -2688,7 +2688,7 @@
       "version": "1.0.1"
     },
     "gridicons": {
-      "version": "1.1.0"
+      "version": "2.0.0-alpha.2"
     },
     "growl": {
       "version": "1.9.2",
@@ -3075,7 +3075,7 @@
       "dev": true,
       "dependencies": {
         "isobject": {
-          "version": "3.0.0",
+          "version": "3.0.1",
           "dev": true
         }
       }

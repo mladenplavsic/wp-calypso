@@ -31,14 +31,14 @@ function uploadGravatar( { dispatch }, action, next ) {
 	next( action );
 }
 
-function uploadComplete( { dispatch }, { file }, next ) {
+function uploadComplete( { dispatch }, { file } ) {
 	const fileReader = new FileReader( file );
 	fileReader.addEventListener( 'load', function() {
-		next( {
+		dispatch( {
 			type: GRAVATAR_UPLOAD_RECEIVE,
 			src: fileReader.result,
 		} );
-		next( withAnalytics(
+		dispatch( withAnalytics(
 			recordTracksEvent( 'calypso_edit_gravatar_upload_success' ),
 			{ type: GRAVATAR_UPLOAD_REQUEST_SUCCESS }
 		) );

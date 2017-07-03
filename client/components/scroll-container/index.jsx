@@ -75,6 +75,11 @@ export default class ScrollContainer extends PureComponent {
 			this.calculateTrackRectangles();
 			this.updatePuck();
 		} );
+		this.windowScrollHandler = debounce( () => {
+			if ( this.state.verticalTrackRect ) {
+				this.updateScrollbar();
+			}
+		}, 100 );
 
 		this.dragPuck = event => {
 			const { clientX, clientY } = event;
@@ -267,14 +272,13 @@ export default class ScrollContainer extends PureComponent {
 			const clickedAbovePuck = clientY < verticalTrackRect.top + verticalPuckOffset;
 			if ( clickedAbovePuck || clickedBelowPuck ) {
 				const scrollYTarget = clickedAbovePuck ? scrollTop - clientHeight : scrollTop + clientHeight;
-				this.scrollTo( scrollLeft, scrollYTarget );
+				this.scrollTo( scrollLeft, scrollYTarget, () => this.setState( () => ( { verticalPuckHovered: true } ) ) );
 			} else {
 				this.setState( () => ( {
 					draggingPuck: true,
 					dragStartPosition: clientY,
 					forceVisible: true,
 					startingScrollPosition: scrollTop,
-					verticalPuckHovered: true,
 				} ) );
 			}
 		}
@@ -394,15 +398,22 @@ export default class ScrollContainer extends PureComponent {
 			verticalPuckSize,
 			verticalTrackHovered,
 		} = this.state;
-		const browserScrollbarPadding = `-${ browserScrollbarWidth }px`;
+
+		// Safari doesn't like the standard negative margin solution to hiding the scrollbar.  So, if
+		// the scrollbar has no width, we need to incorporate a more thorough solution.
+		const scrollbarNoLayout = browserScrollbarWidth === 0;
+		const scrollbarClipStyles = {
+			marginRight: scrollbarNoLayout ? '-15px' : `-${ browserScrollbarWidth }px`,
+			paddingRight: scrollbarNoLayout ? '15px' : null,
+		};
+		const trackStyles = {
+			right: scrollbarNoLayout ? '15px' : '',
+		};
 		const classes = classnames( BASE_CLASS, `${ BASE_CLASS }__vertical`, className, {
 			[ `${ BASE_CLASS }-autohide` ]: autoHide,
 			[ `${ BASE_CLASS }-dragging` ]: draggingPuck,
 			[ `${ BASE_CLASS }__force-visible` ]: forceVisible,
 		} );
-		const scrollbarClipStyles = {
-			marginRight: browserScrollbarPadding,
-		};
 		return (
 			<div
 				ref={ this.rootNodeRefFn }
@@ -431,6 +442,7 @@ export default class ScrollContainer extends PureComponent {
 						puckHovered={ verticalPuckHovered }
 						puckOffset={ verticalPuckOffset }
 						puckSize={ verticalPuckSize }
+						style={ trackStyles }
 						trackHovered={ verticalTrackHovered }
 					/>
 					: null

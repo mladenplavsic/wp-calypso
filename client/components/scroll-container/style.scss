@@ -17,13 +17,13 @@ $scroll-width-transition: width 0.1s linear 0.2s;
 
 	// Scroll direction helpers
 	&__vertical .#{$scroll-ns}__content-container {
-		height: 100%;
+		min-height: 100%;
 		overflow-x: hidden;
 		overflow-y: scroll;
 	}
 
 	&-dragging {
-		cursor: initial !important;
+		cursor: pointer !important;
 		user-select: none;
 	}
 
@@ -92,9 +92,4 @@ $scroll-width-transition: width 0.1s linear 0.2s;
 			}
 		}
     }
-}
-
-.#{$scroll-ns}__lock-scroll {
-	height: 100vh;
-	overflow: hidden;
 }

@@ -11,7 +11,7 @@ import { BASE_CLASS } from './helpers/constants';
 
 export default class ScrollTrack extends PureComponent {
 	render() {
-		const { className, direction, puckHovered, puckOffset, puckSize, trackHovered } = this.props;
+		const { className, direction, puckHovered, puckOffset, puckSize, style, trackHovered } = this.props;
 		const isVertical = direction === 'vertical';
 		const isHorizontal = direction === 'horizontal';
 		const hoverClass = `${ BASE_CLASS }-is-hovered`;
@@ -28,7 +28,7 @@ export default class ScrollTrack extends PureComponent {
 			[ hoverClass ]: puckHovered,
 		} );
 		return (
-			<div ref={ this.props.refFn } className={ trackClasses }>
+			<div ref={ this.props.refFn } className={ trackClasses } style={ style }>
 				<div
 					className={ puckClasses }
 					style={ puckStyles }
@@ -45,6 +45,7 @@ ScrollTrack.propTypes = {
 	puckHovered: PropTypes.bool,
 	puckOffset: PropTypes.number.isRequired,
 	puckSize: PropTypes.number.isRequired,
+	style: PropTypes.object,
 	trackHovered: PropTypes.bool,
 };
 
